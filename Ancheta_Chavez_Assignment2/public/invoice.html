@@ -1,0 +1,149 @@
+<!-- Ancheta, Chavez 
+Assignment 2-->
+<script src="./products.js"
+  type="text/javascript">// This is a warning. Jk lol, this script pulls from the products.js file</script>
+<script>
+  //referenced from assignment 1 examples and invoice4
+  let params = (new URL(document.location)).searchParams; // Grabs data and stores it so that it will show up after a user has logged in.
+  var quantities = [];
+  if (params.has('submitPurchase')) { // Setting up an if statement with the basis that the user hit submitPurchase
+    for (i = 0; i < products.length; i++) {
+      if (params.has(`quantity${i}`)) {
+        a_qty = params.get(`quantity${i}`);
+        quantities[i] = a_qty;
+      }
+    }
+
+  } else {
+    window.location.href = './products_display.html'; // If it didn't work out right, user will go back to the products_display page.
+  }
+  if (params.has('username')) {
+    var name = params.get('name');
+    var username = params.get('username');
+  }
+</script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<!-- typical linking of font and stylesheets-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Invoice</title>
+  <link rel="stylesheet" href="./stylesheets/navbar.css">
+  <link rel="stylesheet" href="./stylesheets/checkout.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+  <style>
+    body {
+      font-family: 'Arvo', 'Open Sans';
+    }
+  </style>
+</head>
+<!-- creating the navbar, floating the title of the actual page and link to homepage to the left, while floating the shopping cart to the right -->
+
+<body>
+  <ul>
+    <li style="float:left"><a href="./index.html">Just A Quick Peeker</a></li>
+    <li><a href="./products_display.html">Stickers</a></li>
+    <li style="float:right"><a class="active" href="./invoice.html">Shopping Cart</a></li>
+  </ul>
+  <br>
+  <div class="row">
+    <div class="col-25">
+      <div class="container">
+        <table>
+          <!-- this is the table for the invoice. Shows the quantity, price, and extended price. Used a document.write script so that it would write out on the page.-->
+          <tbody>
+            <tr>
+              <th style="text-align: left;" width="40%">Product</th>
+              <th width="20%">Quantity</th>
+              <th width="20%">Price</th>
+              <th width="20%">Extended Price</th>
+            </tr>
+            <script>
+              subtotal = 0
+              for (i = 0; i < products.length; i++) {
+                if (quantities[i] > 0) {
+                  // product row
+                  extended_price = quantities[i] * products[i].price
+                  subtotal += extended_price;
+                  document.write(`
+            <tr>
+              <td style="text-align: left;" width="40%">${products[i].name}</td>
+              <td width="20%">${quantities[i]}</td>
+              <td width="20%">\$${products[i].price}</td>
+              <td width="20%">\$${extended_price}</td>
+            </tr>
+            `);
+                }
+              }
+              // yay I can use the double // to comment again! praise java.
+              // using hawaii tax rate 
+              var tax_rate = 0.0471;
+              var tax = tax_rate * subtotal;
+
+              // Compute shipping
+              if (subtotal <= 50) {
+                shipping = 2;
+              }
+              else if (subtotal <= 100) {
+                shipping = 5;
+              }
+              else {
+                shipping = 0.05 * subtotal; // 5% of subtotal
+              }
+
+              // Compute grand total
+              var total = subtotal + tax + shipping;
+
+
+            </script>
+            <tr>
+              <td colspan="4" width="100%">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="3" width="67%">Sub-total</td>
+              <td width="54%">$
+                <script>document.write(subtotal);</script>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" width="67%"><span style="font-family: arial;">Tax at
+                  <script>document.write(100 * tax_rate);</script>%</span></td>
+              <td width="54%">$
+                <script>document.write(tax.toFixed(2));</script>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" width="67%">Shipping</span></td>
+              <td width="54%">$
+                <script>document.write(shipping.toFixed(2));</script>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" width="67%"><strong>Total</strong></td>
+              <td width="54%"><strong>$
+                  <script>document.write(total.toFixed(2));</script></strong></td>
+            </tr>
+            <tr>
+              <td style="text-align: center;" colspan="4"> <strong><br>OUR SHIPPING POLICY IS:
+                  <br>A subtotal $0 - $49.99 will be $2 shipping
+                  <br>A subtotal $50 - $99.99 will be $5 shipping</br>
+                  Subtotals over $100 will be charged 5% of the subtotal amount</strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-75">
+      <div class="container">
+        <form name="complete_purchase" action="./complete_purchase.html" method="GET">
+          <input type="submit" value="Complete Purchase" class="btn">
+        </form>
+      </div>
+    </div>
+</body>

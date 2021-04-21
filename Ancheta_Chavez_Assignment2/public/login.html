@@ -1,0 +1,52 @@
+<!-- Chavez Ancheta's Login HTML for Assignment 2-->
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <!-- linking the stylesheets -->
+    <link rel="stylesheet" href="./stylesheets/navbar.css">
+    <link rel="stylesheet" href="./stylesheets/products-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+    <!-- giving this page some character -->
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arvo', 'Open Sans';
+            color: rgb(66, 3, 78);
+            background-image: url(./images/creepyuno.png);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- making a list -->
+    <ul>
+        <li style="float:left"><a href="./index.html">Just A Quick Peeker</a></li>
+        <li><a href="./products_display.html">Stickers</a></li>
+        <li style="float:right"><a href="./invoice.html">Shopping Cart</a></li>
+        <li style="float:right"><a href="./register.html">Register</a></li>
+        <li style="float:right"><a class="active" href="./login.html">Login</a></li>
+    </ul>
+    <h2><mark>Login to your JAQP Account Here</mark></h2>
+    <!-- Header to give the page some flair and to tell the users what the page is for.-->
+    <form name="login" action="process_login" method="POST">
+        <!-- This section is the form for the user's registration. Combined information from Lab14 and W3Schools -->
+        <div class="container"><br> <!-- Starting the container to create the form -->
+            <input type="text" name="username" id="username" size="40" placeholder="Enter Username" required><br>
+            <input type="password" name="password" size="40" placeholder="Enter Password" onkeyup="" required><br>
+            <input type="submit" value="Login" name="login" class='btn'>
+            <br />
+            <input type="button" name="newuser" value="New User Register Here!" class="btn2"
+                onclick="window.location='./register.html' + document.location.search;">
+        </div>
+    </form>
+    <script>
+
+        login.action += document.location.search; // Saves the information and allows it to be used on the invoice page
+    </script>
+</body>
+
+</html>

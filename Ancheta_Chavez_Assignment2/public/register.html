@@ -1,0 +1,70 @@
+<!-- Chavez Ancheta's Registration Page, got help by looking at Alyssa Mencel's registration page from Fall 2020-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        let params = (new URL(document.location)).searchParams;
+
+        window.onload = function () { // creating the function for window.onload
+            //if there are errors it tells the user 
+            if (params.has('errors')) {
+
+                console.log("invalid");
+                alert('Fix the following errors: \n' + params.get('errors'));
+            }
+        }    
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Registration</title>
+    <!-- linking the stylesheets -->
+    <link rel="stylesheet" href="./stylesheets/navbar.css">
+    <link rel="stylesheet" href="./stylesheets/products-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+    <!-- giving this page some character -->
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arvo', 'Open Sans';
+            color: rgb(66, 3, 78);
+            background-image: url(./images/creepyuno.png);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- making a list -->
+    <ul>
+        <li style="float:left"><a href="./index.html">Just A Quick Peeker</a></li>
+        <li><a href="./products_display.html">Stickers</a></li>
+        <li style="float:right"><a href="./invoice.html">Shopping Cart</a></li>
+        <li style="float:right"><a class="active" href="./register.html">Register</a></li>
+    </ul>
+    <h2><mark> Please register an account before purchasing any items.</mark></h2>
+    <div id='account'> <!--- Creating a container called account to hold user information-->
+        <form method="POST" action="process_register" name="Register">
+            <input type="text" name="fullname" size="40" pattern="[a-zA-Z]+[ ]+[a-zA-Z]+"
+                placeholder="Enter your First and Last Name"><br />
+            <input type="text" name="username" size="40" pattern=".[a-z0-9]{3,10}" required
+                title="Minimum 4 Characters, Maximum 10 Characters, Numbers/Letters Only"
+                placeholder="Enter desired Username"><br />
+            <input type="email" name="email" size="40" placeholder="Enter Email"
+                pattern="[a-z0-9._]+@[a-z0-9]+\.[a-z]{3,}$" required title="Please enter valid email."><br />
+            <input type="password" id="password" name="password" size="40" pattern=".{6,}" required
+                title="6 Characters Minimum" placeholder="Enter desired Password"><br />
+            <input type="password" id="repeat_password" name="repeat_password" size="40" pattern=".{6,}" required
+                title="6 Characters Minimum" placeholder="Repeat desired Password"><br />
+
+            <input type="submit" value="Register" class="btn"> <!--- Creating an button input called Register for the user to register account-->
+            <br />
+            <script>
+                Register.action += document.location.search;
+            </script>
+            <input type="button" name="registered" value="Already Have An Account" class="btn2"
+                onclick="window.location='./login.html' + document.location.search;">
+        </form>
+    </div>
+</body>
+
+</html>

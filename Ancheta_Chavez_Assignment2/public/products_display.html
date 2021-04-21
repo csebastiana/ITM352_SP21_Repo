@@ -1,0 +1,97 @@
+<script src="./products.js" type="text/javascript">
+    window.onload = function () {
+        let params = (new URL(document.location)).searchParams; // get the query string which has the form data
+        // form was submitted so check that quantities are valid then redirect to invoice if ok.
+        if (params.has('submitPurchase')) {
+            has_errors = false; // assume quantities are valid from the start
+            total_qty = 0; // need to check if something was selected so we will look if the total > 0
+            //For every product in the array display its image and name and list price
+            for (i = 0; i < products.length; i++) {
+                if (params.has(`quantity${i}`)) {
+                    a_qty = params.get(`quantity${i}`);
+                    // make textboxes sticky in case of invalid data
+                    product_main_display[`quantity${i}`].value = a_qty;
+                    total_qty += a_qty;
+                    if (!isNonNegInt(a_qty)) {
+                        has_errors = true; // invalid quantity
+                        checkQuantityTextbox(product_main_display[`quantity${i}`]); // show where the error is
+                    }
+                }
+            }
+            // Now respond to errors or redirect to invoice if all is ok
+            if (has_errors) {
+                alert("Please enter only valid quantities!");
+            } else if (total_qty == 0) { // no quantity selections
+                alert("Please select some quantities!");
+            } else { // all good to go!
+                window.location = `./invoice.html${document.location.search}`; //Redirects itself to invoice
+                window.stop;
+            }
+        }
+    }
+// Had to do this so that it links to my array
+</script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just A Quick Peeker's Peekers</title>
+    <!-- linking the stylesheets -->
+    <link rel="stylesheet" href="./stylesheets/navbar.css">
+    <link rel="stylesheet" href="./stylesheets/products-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+    <!-- giving this page some character -->
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arvo', 'Open Sans';
+            color: rgb(66, 3, 78);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- making a list -->
+    <ul>
+        <li style="float:left"><a href="./index.html">Just A Quick Peeker</a></li>
+        <li><a class="active" href="./products_display.html">Stickers</a></li>
+        <li style="float:right"><a href="./invoice.html">Shopping Cart</a></li>
+        <li style="float:right"><a href="./register.html">Register</a></li>
+
+    </ul>
+    <!-- starting a form -->
+    <form name="product_main_display" action="/process_purchase" method="POST">
+        <div>
+            <main>
+                <!-- setting up a script to write each products name onto the page-->
+                <script>
+                    for (i = 0; i < products.length; i++) {
+                        document.write(`
+                                <section class="item">
+                                    <h2>${products[i].name}</h2>
+                                    <br><img src="${products[i].image}">
+                                    <p>$${products[i].price}</p>
+                                    <p><em>${products[i].description}</em></p>
+                                    <label id="quantity${i}_label"}">Quantity</label>
+                                    <input type="text" placeholder="0" name="quantity${i}" 
+                                    onkeyup="checkQuantityTextbox(this);">
+                
+                                </section>
+                            `);
+                    }  
+                </script>
+            </main>
+        </div>
+        <!-- inputting a footer button as well as a disclaimer that the images do not belong to me. -->
+        <footer>
+            <input type="submit" value="Proceed to Checkout" name="submitPurchase" id="sbutton">
+            <p>All images belong to CHOTTOMINUTE.COM,
+                I am just using them for assignment purposes and any transactions will not actually go through.
+            </p>
+        </footer>
+    </form>
+</body>
+
+</html>
