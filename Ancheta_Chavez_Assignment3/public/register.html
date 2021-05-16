@@ -1,0 +1,151 @@
+<!-- Chavez Ancheta's Registration Page, got help by looking at Alyssa Mencel's registration page from Fall 2020-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        let params = (new URL(document.location)).searchParams;
+
+        window.onload = function () { // creating the function for window.onload
+            //if there are errors it tells the user 
+            if (params.has('errors')) {
+
+                console.log("invalid");
+                alert('Fix the following errors: \n' + params.get('errors'));
+            }
+        }    
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Registration</title>
+    <!-- linking the stylesheets -->
+    <link rel="stylesheet" href="./stylesheets/navbar.css">
+    <link rel="stylesheet" href="./stylesheets/products-style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arvo">
+    <!-- giving this page some character -->
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Arvo', 'Open Sans';
+            color: rgb(66, 3, 78);
+            background-image: url(./images/creepyuno.png);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- making a list -->
+    <ul>
+        <li style="float:left"><a href="./index.html">Just A Quick Peeker</a></li>
+        <li><a href="./apparel.html">Apparel</a></li>
+        <li><a href="./car_junk.html">Car Junk</a></li>
+        <li><a href="./lifestyle.html">Lifestyle</a></li>
+        <li style="float:right"><a href="./invoice.html">Shopping Cart</a></li>
+        <li style="float:right"><a class="active" href="./register.html">Register</a></li>
+        <li style="float:right"><a href="./login.html">Login</a></li>
+    </ul>
+    <h2><mark> Please register an account before purchasing any items.</mark></h2>
+      <!-- Header to give the page some flair and to tell the users what the page is for.-->
+      <div id='account'> <!--- Creating a container called account to hold user information-->
+        <form method="POST" action="process_register" name="Register">
+            <input type="text" name="fullname" size="40" pattern="[a-zA-Z]+[ ]+[a-zA-Z]+"
+                placeholder="Enter your First and Last Name"><br />
+            <input type="text" name="username" size="40" pattern=".[a-z0-9]{3,10}" required
+                title="Minimum 4 Characters, Maximum 10 Characters, Numbers/Letters Only"
+                placeholder="Enter desired Username"><br />
+            <input type="email" name="email" size="40" placeholder="Enter Email"
+                pattern="[a-z0-9._]+@[a-z0-9]+\.[a-z]{3,}$" required title="Please enter valid email."><br />
+            <input type="password" id="password" name="password" size="40" pattern=".{6,}" required
+                title="6 Characters Minimum" placeholder="Enter desired Password"><br />
+            <input type="password" id="repeat_password" name="repeat_password" size="40" pattern=".{6,}" required
+                title="6 Characters Minimum" placeholder="Repeat desired Password"><br />
+
+            <input type="submit" value="Register" class="btn"> <!--- Creating an button input called Register for the user to register account-->
+            <br />
+            <script>
+                Register.action += document.location.search;
+            </script>
+    <script>
+        //made with help from w3schools.com
+        function setCookie(cname, cvalue, exdays) { //sets cookie
+            var d = new Date(); //today's date
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000)); //expiration is set to a day after inital login
+            var expires = "expires=" + d.toUTCString(); 
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"; 
+        }
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        function eraseCookie(name) {
+            document.cookie = name + '=; Max-Age=-99999999;';
+        }
+
+        //made with help from stackoverflow.com, allows one to return to previous page after login 
+        function GoBackWithRefresh(event) { 
+            var past = document.referrer;
+            var pastPage = past.split('/').pop(); 
+
+            if (pastPage != 'login.html' && pastPage != 'register.html') { 
+                window.location = past;
+            } else if (pastPage == 'login.html' && pastPage == 'register.html') {
+                window.history.go(-2); 
+            } else {
+                window.location.href = './index.html'; 
+            }
+
+        };
+
+        //Made with help from microservice example 
+        function register_user() { //validates on the server 
+            data = new URLSearchParams(new FormData(registration_form)); // sets variable 
+
+            fetch('/process_register', //gets response from app post
+                {
+                    method: 'post',
+                    body: data,
+                    redirect: 'follow'
+                }
+            ).then(function (response) { 
+
+                if (response.ok) { 
+
+                    response.json().then(function (errors) { 
+
+                        if (Object.keys(errors).length == 0) { 
+                            sessionStorage.clear(); //resets the session
+                            var theDate = JSON.stringify(Date()); //has time of login
+                            var username = registration_form.username;
+                            var userEmail = registration_form.email;
+                            var user_name = registration_form.name;
+                            setCookie('last_login_time', JSON.parse(theDate),'username', username, 'email', userEmail, 'name', user_name); 
+                            response.redirect(GoBackWithRefresh()); 
+                        } else {
+
+                            for (errorId in errors) { 
+                                document.getElementById(errorId + '_message').innerHTML = errors[errorId]; 
+                            }
+
+                        }
+
+                    });
+
+                }
+
+                else {
+                    console.log('Network request for /register_user failed with response ' + response.status + ': ' + response.statusText); 
+                }
+
+            });
+        }
+
+    </script>
+</body>
+
+</html>
