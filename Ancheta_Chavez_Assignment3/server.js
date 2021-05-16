@@ -374,13 +374,10 @@ app.post("/process_register", function (req, res) { // Process registration, thi
   }
 });
 
-app.get("/logout", function (req, res) {
-  // Nicholas Samson helped me personalize the user's username
-  str = `<script>alert('${req.cookies["username"]} has successfully logged out!'); location.href="./index.html";</script>`; 
-  res.clearCookie('username'); // Clears var user_info (username, email)
-  res.send(str);
-  req.session.destroy(); // Destroys session
-}); 
+app.post('/logout', function (request, response) { 
+  request.session.reset(); 
+  response.redirect('/index.html'); 
+});
 
 app.use(express.static('./public'));
 app.listen(8080, () => console.log(`listening on port 8080`)); // Makes sure to listen on port 8080
