@@ -1,28 +1,28 @@
 // Server.js for Assignment 3 -- Chavez Ancheta -- Just A Quick Peek -- Used examples from the Assignment1 Example and Lab13 to create this server. Also read a lot online 
 
-var data = require('./public/products.js'); //load the products file and setting it to variable data 
-var allProducts = data.allProducts; //setting the variabel allProdcuts to the allProducts data in products.js
-const queryString = require('query-string'); //using the query-string
-var express = require('express'); //using the express module
-var app = express(); //setting the variable app to express module 
-var myParser = require("body-parser"); //using the body parser module
-var fs = require('fs'); //using the fs module 
-var filename = 'user_data.json';
-//var user_info_file = './user_data.json'; //setting the user_data file to user_info_file
-//var userdata_file = fs.readFileSync(user_info_file, 'utf-8'); //assigneing the userdata as a string variable 
-//userdata = JSON.parse(userdata_file); //the json is then parsed and string is turned into object 
+var data = require('./public/products.js'); // Loads products.js
+var allProducts = data.allProducts; // Creating a variable called allProducts using the data variable 
+const queryString = require('query-string'); // Creating the constant for queryString
+var express = require('express'); // Using the express module
+var app = express(); // Creating an app for the express module
+var myParser = require("body-parser"); // Using the body parser module and setting it to myParser
+var fs = require('fs'); // Using the fs module and setting it to fs
+var filename = 'user_data.json'; // setting a variable called filename for the user_data.json
 var cookieParser = require('cookie-parser'); //using the cookie-parser
 var session = require('express-session'); //using the express-session module 
+/* end of variable declarations */
+
 app.use(myParser.urlencoded({ extended: true })); //putting data in the body 
 const nodemailer = require("nodemailer"); //using the node mailer module 
-
 app.use(cookieParser()); //using cookie-parser middleware
 
-app.all('*', function (request, response, next) { // this is required because i am using express to route. it will allow me to make requests
-  console.log(request.method + ' to ' + request.path); // this writes the request into the console
+/* The next section is for express routing to create requests */
+app.all('*', function (request, response, next) { 
+  console.log(request.method + ' to ' + request.path); 
   next();
 });
 
+/* Reading the data using the fs module*/
 if (fs.existsSync(filename)) {
   data = fs.readFileSync(filename, 'utf-8');
 
@@ -32,20 +32,18 @@ else {
   console.log(filename + ' does not exist.'); // Just in case the file isn't there
 }
 
-/*this is used to take info from cart.html
-the server will generate the invoice and send email to user
-then the invoice will be displayed in the page*/
+/*via Alyssa Mencel's Assignment 3, and Noah Kim's Assignment 3. Tailored to fit my project*/
 app.post("/generateInvoice", function (request, response) {
-  cart = JSON.parse(request.query['cartData']); //this parses the cart 
-  cookie = JSON.parse(request.query['cookieData']); //this parses the cookies 
+  cart = JSON.parse(request.query['cartData']); // Parses the cart data 
+  cookie = JSON.parse(request.query['cookieData']); // Parses cookies
   var theCookie = cookie.split(';');
   for (i in theCookie) {
-    //function from stackoverflow.com
-    function split(theCookie) { //split the cookie (before "=")
+    // Got function from stackoverflow
+    function split(theCookie) { // Splits the cookie (before "=")
       var i = theCookie.indexOf("=");
 
       if (i > 0)
-        return theCookie.slice(0, i);//takes off the string after the =
+        return theCookie.slice(0, i);// Takes off the string after the =
       else {
         return "";
       }
@@ -53,7 +51,7 @@ app.post("/generateInvoice", function (request, response) {
 
     var key = split(theCookie[i]);
 
-    //this sets the username to the variable theUsername 
+    /* Creating a variable for holding the username and customer email*/
     if (key == ' username') {
       var theUsername = theCookie[i].split('=').pop();
       var custEmail = users_reg_data[theUsername].email;
@@ -61,9 +59,7 @@ app.post("/generateInvoice", function (request, response) {
   }
 
   /*
-  this creates a string of the invoice from cart.html
-  this is what is emailed to the user
-  used with help from previous invoice.html 
+  Uses my old invoice.html (rest in peace) and generates it on the page
   */
 
   str =
@@ -174,23 +170,22 @@ app.post("/generateInvoice", function (request, response) {
         </table> 
       </section>`;
 
-  //this code was made with help from assignment 3 example 
-  var transporter = nodemailer.createTransport({ //create the transporter variable
-    host: 'mail.hawaii.edu', //note on itmvm webserver have to use the mail from hawaii.edu
-    port: 25,
-    secure: false, //use tls
+  // This was made via the Assignment 3 example
+  var transporter = nodemailer.createTransport({ // Creating the transporter variable using the nodemailer
+    host: 'mail.hawaii.edu', // Required to use mail.hawaii.edu
+    port: 25, // Port set to 25
+    secure: false, 
     tls: {
-      //do not fail on invalid certs
       rejectUnauthorized: false
     }
   });
   var mailOptions = {
-    from: 'csna@hawaii.edu', //sends the invoice from my personal gmail account
-    to: custEmail, //sends the email to cookie from the account that was logged in
+    from: 'csna@hawaii.edu', // Email sent from my hawaii.edu
+    to: custEmail, // Sends the email to the customer --> Variable that was created earlier
     subject: 'Invoice',
-    html: str //the string then returns as html 
+    html: str // String returns as html
   };
-  //notification in console if errors in sending email or if it sent properly 
+  // Creates a console message
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -219,39 +214,39 @@ app.post("/process_purchase", function (request, response) {
     var validAmount = true; //make the variable validAmount true 
     var amount = false; //make the variable amount equal to false 
 
-    for (i = 0; i < `${(products_array[`type`][i])}`.length; i++) { //for any product
-      qty = POST[`quantity_textbox${i}`]; //sets the variable qty to quantity textbox 
+    for (i = 0; i < `${(products_array[`type`][i])}`.length; i++) { // Using the array
+      qty = POST[`quantity_textbox${i}`]; // Changes the variable qty to the information from quantity_textbox
 
       if (qty > 0) {
-        amount = true; //if greater than 0 it is goog 
+        amount = true; 
       }
 
-      if (isNonNegInt(qty) == false) { //if isNonNegInt is false then it is not a number
-        validAmount = false; // it is not a valid amount
+      if (isNonNegInt(qty) == false) { 
+        validAmount = false; 
       }
 
     }
 
-    const stringified = queryString.stringify(POST); //converts data from POST to JSON string 
+    const stringified = queryString.stringify(POST); // Converts data to JSON
 
-    if (validAmount && amount) { //if it is a quanity and greater than 0
-      response.redirect("./login.html?" + stringified); // redirect the page to login page if not logged in 
+    if (validAmount && amount) { // Testing to see if the quantity is greater than 0
+      response.redirect("./login.html?" + stringified); // Redirects user to login page
       return; //stops function
     }
 
-    else { response.redirect("./index.html?" + stringified) } //if there is invalid sends back to home page with the string 
+    else { response.redirect("./index.html?" + stringified) } // If information is invalid, should send to index page.
 
   }
 
 });
 
-//repeats the isNonNegInt function
+// Repeat of the isNonNegInt function
 function isNonNegInt(q, return_errors = false) {
-  errors = []; // assume no errors at first
-  if (q == '') q = 0; // handle blank inputs as if they are 0
-  if (Number(q) != q) errors.push('<font color="red">Not a number</font>'); // Check if string is a number value
-  if (q < 0) errors.push('<font color="red">Negative number</font>'); // Check if it is non-negative
-  if (parseInt(q) != q) errors.push('<font color="red">Not a full product</font>'); // Check that it is an integer
+  errors = []; // Setting up an array called errors
+  if (q == '') q = 0; 
+  if (Number(q) != q) errors.push('<font color="red">Not a number</font>'); // pushes an error if the number is not an actual number
+  if (q < 0) errors.push('<font color="red">Negative number</font>'); // pushes an error if it's a negative number
+  if (parseInt(q) != q) errors.push('<font color="red">Not a full product</font>'); // pushes an error if it's not a whole number
   return return_errors ? errors : (errors.length == 0);
 }
 
@@ -285,27 +280,26 @@ app.post("/process_login", function (req, res) { // Setting up a process_login t
 });
 
 /*
-the following two functions validate the information in the form 
-made with help from w3resource.com 
+Got following 2 code via Alyssa Mencel's Assignment 3
 */
 function ValidateEmail(inputText) {
-  var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //email can only contain letter, numbers, @ symbo 
-  if (inputText.match(mailformat)) { //the input must match above requirements to be a valid email 
+  var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // Email can only contain numbers or symbols
+  if (inputText.match(mailformat)) { // Input must match a valid email
     return true;
   }
   else {
-    return false; //email is invalid 
+    return false; // If email is not valid
   }
 }
 
 
 function isAlphaNumeric(input) {
-  var letterNumber = /^[0-9a-zA-Z]+$/; //can only be variables or numbers 
-  if (input.match(letterNumber)) { //the input must match above requirements 
+  var letterNumber = /^[0-9a-zA-Z]+$/; // Only possible to be variables or numbers
+  if (input.match(letterNumber)) { // Input must match letter and number
     return true;
   }
   else {
-    return false; //it is invalid 
+    return false;
   }
 }
 
@@ -372,11 +366,6 @@ app.post("/process_register", function (req, res) { // Process registration, thi
     req.query.errors = errors.join(';');
     res.redirect('register.html?' + queryString.stringify(req.query));
   }
-});
-
-app.post('/logout', function (request, response) { 
-  request.session.reset(); 
-  response.redirect('/index.html'); 
 });
 
 app.use(express.static('./public'));
